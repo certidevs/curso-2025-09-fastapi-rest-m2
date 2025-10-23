@@ -1,0 +1,3 @@
+# EJECUTAR EN LA TERMINAL: pip install -r requirements.txt
+
+fastapi[standard]==0.119.1
