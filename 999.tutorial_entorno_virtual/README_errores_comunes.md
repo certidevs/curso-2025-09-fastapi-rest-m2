@@ -7,3 +7,7 @@
 3. El error debería haberse solucionado y aparecer la terminal como:
 
 ![alt text](image-6.png)
+
+## NO ESTÁ ACTIVO EL ENTORNO VIRTUAL
+
+1. Abrir la terminal y ejecutar el comando `.\.venv\Scripts\Activate.ps1`
