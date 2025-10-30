@@ -31,3 +31,22 @@
 8. Instalar las dependencias ejecutando en la terminal el comando `pip install -r requirements.txt`
 
 ![alt text](image-8.png)
+
+## BORRAR E INSTALAR DE NUEVO EL ENTORNO VIRTUAL
+
+1. Borrar la carpeta .venv
+ 
+2. Crear un nuevo entorno virtual
+En la terminal integrada de VS Code:
+`python -m venv .venv`.
+Esto creará una nueva carpeta .venv dentro del proyecto.
+
+3. Activar el nuevo entorno. Luego actívalo:
+`.\.venv\Scripts\activate`
+
+4. Instalar dependencias instálalas con: `pip install -r requirements.txt`
+
+5. (Opcional) Configurar VS Code para usar el nuevo entorno
+* Pulsa `Ctrl + Shift + P `
+* Escribe "Python: Select Interpreter"
+* Elige el que diga algo como: `.venv\Scripts\python.exe`
