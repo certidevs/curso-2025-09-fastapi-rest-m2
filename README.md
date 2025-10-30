@@ -36,3 +36,22 @@
 - **Migraciones** automáticas con Alembic
 - **Testing** de APIs con TestClient
 - **Buenas prácticas** de desarrollo
+
+
+1. Clonar repositorio m2
+2. Crear archivo requirements.txt
+3. Crear entorno venv
+4. Hola mundo en fastapi
+
+## Entorno virtual
+
+* 1. Crear entorno virtual:
+    * Opción 1: hacerlo con visual studio code con Create Environment
+    * Opción 2: python -m venv .venv
+
+* 2. Activar el entorno
+    * Windows powershell: .venv\Scripts\activate
+    * Git Bash: source .venv/Scripts/activate
+    
+* 3. Instalar dependencias:
+    * pip install -r requirements.txt
