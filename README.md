@@ -52,6 +52,25 @@
 * 2. Activar el entorno
     * Windows powershell: .venv\Scripts\activate
     * Git Bash: source .venv/Scripts/activate
-    
+
 * 3. Instalar dependencias:
     * pip install -r requirements.txt
+
+## Ejecutar FastAPI
+
+Entrar al directorio donde esté el archivo
+
+```shell
+cd 01_metodos_GET
+
+fastapi dev 01_estructura_basica.py
+
+# alternativa:
+uvicorn 01_estructura_basica:app --reload
+```
+
+Comando para ejecutar en modo producción:
+
+```shell
+fastapi run main.py
+```
