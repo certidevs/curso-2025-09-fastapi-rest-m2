@@ -9,6 +9,7 @@ usuarios_db = [
     {"id": 2, "nombre": "Rabilargo", "email": "rabilargo@aves.com", "edad": 25}
 ]
 
+# esto en el patch no lo usamos, sirve para POST o PUT
 class Usuario(BaseModel):
     nombre: str
     email: str
