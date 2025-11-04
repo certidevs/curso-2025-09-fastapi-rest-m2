@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
 
 app = FastAPI()
 
@@ -13,11 +12,6 @@ class Usuario(BaseModel):
     nombre: str
     email: str
     edad: int
-    
-class UsuarioPatch(BaseModel):
-    nombre: Optional[str] = None
-    email: Optional[str] = None
-    edad: Optional[int] = None
 
 @app.get("/usuarios")
 def obtener_usuarios():
