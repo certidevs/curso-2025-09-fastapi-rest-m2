@@ -1,8 +1,10 @@
 ## PROYECTO
 
+### Equipos
+
 #### Equipo 1
 
-**Temática**: Clínica veterinaria: Mascota, Dueño, Veterinario, Visita...
+**Temática**: Clínica veterinaria: Mascota, Duenyo, Veterinario, Visita...
 
 Repo: https://github.com/albanomp/Proyecto-Clinica-Veterinaria
 
@@ -16,10 +18,10 @@ Repo: https://github.com/albanomp/Proyecto-Clinica-Veterinaria
 
 **Temática**: Gestor de videojuegos: Videojuego, Genero, Desarrolladora, Usuario...
 
-Repo: 
+Repo: https://github.com/Mapakitus/gestor-videojuegos
 
+- **Paco**
 - Jon
-- Paco
 - Lueyo
 - Pablo
 
@@ -41,7 +43,7 @@ Repo: https://github.com/HueteDevs/Proyecto_Adecco
 
 Repo: 
 
+- **Rafael**
 - Deme
 - Rares
 - Alejandro Gómez
-- Rafael
