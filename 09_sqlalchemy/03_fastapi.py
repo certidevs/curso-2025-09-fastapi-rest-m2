@@ -113,6 +113,23 @@ def update(id: int, product_dto: ProductDTO):
     return product
 
 # DELETE remove product
+@app.delete('/api/products/{id}', status_code=status.HTTP_204_NO_CONTENT)
+def delete_by_id(id: int):
+    session = SessionLocal()
+    
+    # 1 buscar si el producto existe, si no existe devolver 404
+    product = session.execute(
+        select(Product).where(Product.id == id)
+    ).scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail='Not found')
+    
+    # si sí existe, borrarlo y devolver 204 no content
+    session.delete(product)
+    session.commit()
+    session.close()
+    return None
+    
 
 # HTML:
 # GET all products HTML
