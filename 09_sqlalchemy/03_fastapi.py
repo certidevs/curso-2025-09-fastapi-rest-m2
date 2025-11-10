@@ -4,7 +4,7 @@ API REST de FastAPI con SQLAlchemy y SQLite
 """
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import Integer, String, create_engine
+from sqlalchemy import Integer, String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 # Configurar base de datos
@@ -41,7 +41,13 @@ def home():
 @app.get('/api/products')
 def find_all():
     session = SessionLocal()
-    products = session.query(Product).all()
+    # opción tradicional query
+    # products = session.query(Product).all()
+    
+    # opción moderna select
+    statement = select(Product)
+    products = session.execute(statement).scalars().all()
+    
     session.close()
     return products
 
@@ -49,7 +55,14 @@ def find_all():
 @app.get('/api/products/{id}')
 def find_by_id(id: int):
     session = SessionLocal()
-    product = session.query(Product).filter(Product.id == id).first()
+    # opción tradicional query
+    # product = session.query(Product).filter(Product.id == id).first()
+    
+    # opción moderna
+    product = session.execute(
+        select(Product).where(Product.id == id)
+    ).scalar_one_or_none()
+    
     session.close()
     if not product:
         raise HTTPException(status_code=404, detail='Not found')
