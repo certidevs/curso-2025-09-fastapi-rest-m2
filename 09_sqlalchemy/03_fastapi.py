@@ -3,6 +3,7 @@ pip install -r requirements.txt
 API REST de FastAPI con SQLAlchemy y SQLite
 """
 from fastapi import FastAPI
+from pydantic import BaseModel
 from sqlalchemy import Integer, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
@@ -20,6 +21,10 @@ class Product(Base):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+
+# crear schemas pydantic (schemas.py)
+class ProductDTO(BaseModel):
+    nombre: str | None = None
 
 # Crear tablas
 Base.metadata.create_all(engine)
@@ -42,6 +47,17 @@ def find_all():
 
 # GET one product
 # POST create product
+@app.post('/api/products')
+def create(product_dto: ProductDTO):
+    session = SessionLocal()
+    product = Product(nombre=product_dto.nombre)
+    session.add(product)
+    session.commit()
+    session.refresh(product) # actualizar id de product
+    session.close()
+    return product
+
+
 # PUT update product
 # DELETE remove product
 
