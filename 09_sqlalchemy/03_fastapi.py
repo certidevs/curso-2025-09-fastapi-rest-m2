@@ -2,7 +2,7 @@
 pip install -r requirements.txt
 API REST de FastAPI con SQLAlchemy y SQLite
 """
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy import Integer, String, create_engine, select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
@@ -10,6 +10,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 # Configurar base de datos
 engine = create_engine('sqlite:///ecommerce.db', echo=True) # echo True para mostrar SQL solo en desarrollo
 SessionLocal = sessionmaker(bind=engine)
+# TODO - autoflush a true, commit true
 
 # Crear clase Base
 class Base(DeclarativeBase):
@@ -70,18 +71,47 @@ def find_by_id(id: int):
 
 
 # POST create product
-@app.post('/api/products')
+
+@app.post('/api/products', status_code=status.HTTP_201_CREATED)
 def create(product_dto: ProductDTO):
     session = SessionLocal()
     product = Product(nombre=product_dto.nombre)
     session.add(product) # guardar en base de datos INSERT
-    session.commit()
+    session.commit() # se guarda el producto en base de datos asignando un nuevo id
     session.refresh(product) # actualizar id de product
     session.close()
+    # TODO - Gestión de errores: 
+    #   si nombre está ocupado entonces lanzar un 400 bad request
+    #   si precio menor que 0.01 entonces lanzar un 400 bad request
     return product
 
 
-# PUT update product
+# PUT update product (actualizar un producto existente) (no crea nuevos)
+@app.put('/api/products/{id}')
+def update(id: int, product_dto: ProductDTO):
+    session = SessionLocal()
+    
+    # 1. buscar el producto por id en base de datos y si no existe lanzar 404
+    product = session.execute(
+        select(Product).where(Product.id == id)
+    ).scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail='Not found')
+    
+    # 2. si sí existe, actualizamos el producto recuperado de base de datos
+    # con los datos del product_dto
+    if product_dto.nombre is not None:
+        product.nombre = product_dto.nombre
+        
+    #if product_dto.price is not None and product_dto.price > 0.01:
+    #    product.price
+    # TODO actualizar todo los campos que se quiera, por ejemplo: nombre, precio, cantidad, fecha, activo
+    
+    session.commit()
+    session.refresh(product)
+    session.close()
+    return product
+
 # DELETE remove product
 
 # HTML:
