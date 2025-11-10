@@ -2,27 +2,27 @@
 pip install -r requirements.txt
 API REST de FastAPI con SQLAlchemy y SQLite
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import Integer, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 # Configurar base de datos
-engine = create_engine('sqlite:///ecommerce.db')
+engine = create_engine('sqlite:///ecommerce.db', echo=True) # echo True para mostrar SQL solo en desarrollo
 SessionLocal = sessionmaker(bind=engine)
 
 # Crear clase Base
 class Base(DeclarativeBase):
     pass
 
-# crear entidades que heredan de Base (models.py)
+# SQLALCHEMY MODELS : crear entidades que heredan de Base (models.py)
 class Product(Base):
     __tablename__ = 'products'
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     nombre: Mapped[str] = mapped_column(String(100), nullable=False)
 
-# crear schemas pydantic (schemas.py)
+# PYDANTIC MODELS : crear schemas pydantic (schemas.py)
 class ProductDTO(BaseModel):
     nombre: str | None = None
 
@@ -45,13 +45,23 @@ def find_all():
     session.close()
     return products
 
-# GET one product
+# GET one product BY ID
+@app.get('/api/products/{id}')
+def find_by_id(id: int):
+    session = SessionLocal()
+    product = session.query(Product).filter(Product.id == id).first()
+    session.close()
+    if not product:
+        raise HTTPException(status_code=404, detail='Not found')
+    return product
+
+
 # POST create product
 @app.post('/api/products')
 def create(product_dto: ProductDTO):
     session = SessionLocal()
     product = Product(nombre=product_dto.nombre)
-    session.add(product)
+    session.add(product) # guardar en base de datos INSERT
     session.commit()
     session.refresh(product) # actualizar id de product
     session.close()
