@@ -47,3 +47,16 @@ Repo: https://github.com/RaresID/biblioteca-commerce
 - Deme
 - Rares
 - Alejandro Gómez
+
+
+## AVANCE
+
+* Reuniones
+* GitHub
+* main.py con api rest con sqlalchemy con sqlite
+* Pensar tablas de base de datos con SQLAlchemy 
+    * primero solo dos atributos: campo id y otro atributo
+    * agregar atributos uno a uno, probando cada uno
+    * (primero sin asociaciones)
+* API REST operaciones CRUD por el API REST, probando en Swagger UI
+* Asociaciones: intentar una/dos asociación Many To One
