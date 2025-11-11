@@ -3,7 +3,8 @@ from pydantic import BaseModel, ConfigDict
 from sqlalchemy import create_engine, Integer, String, Boolean, select
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 
-# configurar base de datos
+
+# CONFIGURACIÓN BASE DE DATOS
 
 # crear motor de conexión a base de datos
 engine = create_engine(
@@ -20,7 +21,8 @@ SessionLocal = sessionmaker(
     expire_on_commit=False
 )
 
-# modelo base de datos (sqlalchemy)
+
+# MODELO BASE DE DATOS (sqlalchemy)
 
 # clase base para modelos sqlalchemy
 class Base(DeclarativeBase):
@@ -41,7 +43,8 @@ class Song(Base):
     # optional
     explicit: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
-# modelos pydantic (schemas)
+
+# MODELOS PYDANTIC (schemas)
 # modelos que validan los datos que llegan y salen de la api
 
 # schema para TODAS las respuestas de la API
@@ -85,7 +88,8 @@ class SongPatch(BaseModel):
     duration_seconds: int | None = None
     explicit: bool | None = None
 
-# inicialización base de datos
+
+# INICIALIZACIÓN BASE DE DATOS
 
 # crear todas las tablas
 Base.metadata.create_all(engine)
@@ -119,4 +123,27 @@ def init_db():
     finally:
         db.close()
 
+# inicializa la base de datos con canciones por defecto
 init_db()
+
+
+# DEPENDENCIA DE FASTAPI
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db # entrega la sesión al endpoint
+    finally:
+        db.close()
+
+
+
+# APLICACIÓN FASTAPI
+
+# crea la instancia de la aplicación FastAPI
+app = FastAPI(title="Cancioncitas", version="1.0.0")
+
+# endpoint raíz
+@app.get("/")
+def home():
+    return {"mensaje": "Bienvenido a la app Cancioncitas"}
