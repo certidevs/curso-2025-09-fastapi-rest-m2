@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import create_engine, Integer, String, Boolean, select
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, Session
 
 
 # CONFIGURACIÓN BASE DE DATOS
@@ -147,3 +147,31 @@ app = FastAPI(title="Cancioncitas", version="1.0.0")
 @app.get("/")
 def home():
     return {"mensaje": "Bienvenido a la app Cancioncitas"}
+
+
+# ENDPOINTS CRUD
+
+# GET - obtener TODAS las canciones
+@app.get("/api/songs", response_model=list[SongResponse])
+def find_all(db: Session = Depends(get_db)):
+    # db.execute(): ejecuta la consulta
+    # select(Song): crea consulta SELECT * FROM song
+    # .scarlars(): extrae los objetos Song
+    # .all(): obtiene los resultados como lista
+    return db.execute(select(Song)).scalars().all()
+
+# GET - obtener UNA canción por id
+@app.get("api/songs/{id}", response_model=SongResponse)
+def find_by_id(id: int, db: Session = Depends(get_db)):
+    # busca a canción con el id de la ruta
+    # .scalar_one_or_none(): devuelve el objeto o None si no existe
+    song = db.execute(
+        select(Song).where(Song.id == id)
+    ).scalar_one_or_none()
+    
+    if not song:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado la canción con id {id}"
+        )
+    return song
