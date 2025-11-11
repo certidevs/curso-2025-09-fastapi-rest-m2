@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import create_engine, Integer, String, Boolean
+from sqlalchemy import create_engine, Integer, String, Boolean, select
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 
 # configurar base de datos
@@ -84,3 +84,46 @@ class SongPatch(BaseModel):
     artist: str | None = None
     duration_seconds: int | None = None
     explicit: bool | None = None
+
+# inicialización base de datos
+
+# crear todas las tablas
+Base.metadata.create_all(engine)
+
+# método inicializar con canciones por defecto
+def init_db():
+    """
+    Inializa la base de datos con canciones por defecto si está vacía.
+    Sólo crea las canciones si no existen ya en la base de datos.
+    """
+    db = SessionLocal()
+    try:
+        existing_songs = db.execute(select(Song)).scalars().all()
+        
+        if existing_songs:
+            return
+        
+        default_songs = [
+            Song(title="Mamma Mia", artist="ABBA", duration_seconds=300, explicit=False),
+            Song(title="Sin ti no soy nada", artist="Amaral", duration_seconds=250, explicit=False),
+            Song(title="Sonata para piano nº 14", artist="Ludwing van Beethoven", duration_seconds=800, explicit=False),
+            Song(title="Mediterráneo", artist="Joan Manuel Serrat", duration_seconds=400, explicit=False),
+            Song(title="Never to Return", artist="Darren Korb", duration_seconds=300, explicit=False),
+            Song(title="Billie Jean", artist="Michael Jackson", duration_seconds=294, explicit=False),
+            Song(title="Smells Like Teen Spirit", artist="Nirvana", duration_seconds=301, explicit=True),
+            Song(title="It's my life", artist="Bon Jovi", duration_seconds=400 , explicit=False),
+            Song(title="Ni idea ahora mismo", artist="Inventado", duration_seconds=300, explicit=False),
+            Song(title="Viva la vida", artist="Cold Play", duration_seconds=314, explicit=False),
+            Song(title = "Neckhurts", artist= "Chadolf", duration_seconds = 300, explicit=True),
+            Song(title="La Rosa de Los Vientos", artist="Mägo de Oz", duration_seconds=258, explicit=False),
+            Song(title="Paranoid Android", artist="Radiohead", duration_seconds=386, explicit=True),
+            Song(title="No me creas", artist= "Alberto plaza", duration_seconds=260, explicit=False)
+        ]
+        
+        # agregar las canciones
+        db.add_all(default_songs)
+        db.commit()
+    finally:
+        db.close()
+
+init_db()
