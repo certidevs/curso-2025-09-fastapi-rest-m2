@@ -110,14 +110,7 @@ def init_db():
             Song(title="Mediterráneo", artist="Joan Manuel Serrat", duration_seconds=400, explicit=False),
             Song(title="Never to Return", artist="Darren Korb", duration_seconds=300, explicit=False),
             Song(title="Billie Jean", artist="Michael Jackson", duration_seconds=294, explicit=False),
-            Song(title="Smells Like Teen Spirit", artist="Nirvana", duration_seconds=301, explicit=True),
-            Song(title="It's my life", artist="Bon Jovi", duration_seconds=400 , explicit=False),
-            Song(title="Ni idea ahora mismo", artist="Inventado", duration_seconds=300, explicit=False),
-            Song(title="Viva la vida", artist="Cold Play", duration_seconds=314, explicit=False),
-            Song(title = "Neckhurts", artist= "Chadolf", duration_seconds = 300, explicit=True),
-            Song(title="La Rosa de Los Vientos", artist="Mägo de Oz", duration_seconds=258, explicit=False),
-            Song(title="Paranoid Android", artist="Radiohead", duration_seconds=386, explicit=True),
-            Song(title="No me creas", artist= "Alberto plaza", duration_seconds=260, explicit=False)
+            Song(title="Smells Like Teen Spirit", artist="Nirvana", duration_seconds=301, explicit=True)
         ]
         
         # agregar las canciones
