@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import create_engine, Integer, String, Boolean
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 
@@ -39,3 +40,47 @@ class Song(Base):
     duration_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
     # optional
     explicit: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+
+# modelos pydantic (schemas)
+# modelos que validan los datos que llegan y salen de la api
+
+# schema para TODAS las respuestas de la API
+# lo usamos en GET, POST, PUT, PATCH
+class SongResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: int
+    title: str
+    artist: str
+    duration_seconds: int | None
+    explicit: bool | None
+
+# schema para CREAR una canción (POST)
+# no incluimos id porque se genera automáticamente
+class SongCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str
+    artist: str
+    duration_seconds: int | None = None
+    explicit: bool | None = None
+
+# schema para ACTUALIZACIÓN COMPLETA (PUT)
+# todos los campos se tienen que enviar
+class SongUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str
+    artist: str
+    duration_seconds: int | None
+    explicit: bool | None
+
+# schema para ACTUALIZACIÓN PARCIAL (PATCH)
+# sólo se envían los campos que quieras actualizar
+class SongPatch(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str | None = None
+    artist: str | None = None
+    duration_seconds: int | None = None
+    explicit: bool | None = None
