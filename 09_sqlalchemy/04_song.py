@@ -253,3 +253,50 @@ def update_full(id: int, song_dto: SongUpdate, db: Session = Depends(get_db)):
     db.commit() # confirma los cambios
     db.refresh(song) # refresca el objeto de la base de datos
     return song # retorna la canción actualizada
+
+# PATCH - actualizar PARCIALMENTE una canción
+@app.patch("/api/songs/{id}", response_model=SongResponse)
+def update_partial(id: int, song_dto: SongPatch, db: Session = Depends(get_db)):
+    # busca canción por id
+    song = db.execute(
+        select(Song).where(Song.id == id)
+    ).scalar_one_or_none()
+    
+    # si no existe, devuelve 404
+    if not song:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado la canción con id {id}"
+        )
+    
+    # actualiza SÓLO los campos que se han enviado (no son None)
+    if song_dto.title is not None:
+        if not song_dto.title.strip():
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El título de la canción no puede estar vacío"
+        )
+        song.title = song_dto.title.strip()
+    
+    if song_dto.artist is not None:
+        if not song_dto.artist.strip():
+            raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El artista de la canción no puede estar vacío"
+        )
+        song.artist = song_dto.artist.strip()
+    
+    if song_dto.duration_seconds is not None:
+        if song_dto.duration_seconds < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="La duración debe ser un número positivo"
+            )
+        song.duration_seconds = song_dto.duration_seconds
+    
+    if song_dto.explicit is not None:
+        song.explicit = song_dto.explicit
+    
+    db.commit() # confirma los cambios en base datos
+    db.refresh(song) # refresca el objeto
+    return song
