@@ -179,6 +179,7 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
 # POST - crear una nueva canción
 @app.post("/api/songs", response_model=SongResponse, status_code=status.HTTP_201_CREATED)
 def create(song_dto: SongCreate, db: Session = Depends(get_db)):
+    # validaciones
     if not song_dto.title.strip():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -209,3 +210,46 @@ def create(song_dto: SongCreate, db: Session = Depends(get_db)):
     db.commit() # confirma la creación en base de datos
     db.refresh(song) # refresca el objeto para obtener el id generado
     return song # retorna la canción creada
+
+# PUT - actualizar COMPLETAMENTE una canción
+@app.put("/api/songs/{id}", response_model=SongResponse)
+def update_full(id: int, song_dto: SongUpdate, db: Session = Depends(get_db)):
+    # busca canción por id
+    song = db.execute(
+        select(Song).where(Song.id == id)
+    ).scalar_one_or_none()
+    
+    # si no existe, devuelve 404
+    if not song:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado la canción con id {id}"
+        )
+    
+    # validaciones (igual que en POST)
+    if not song_dto.title.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El artista de la canción no puede estar vacío"
+        )
+    
+    if not song_dto.artist.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El artista de la canción no puede estar vacío"
+        )
+    
+    if song_dto.duration_seconds is not None and song_dto.duration_seconds < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La duración debe ser un número positivo"
+        )
+    
+    song.title = song_dto.title.strip()
+    song.artist = song_dto.artist.strip()
+    song.duration_seconds = song_dto.duration_seconds
+    song.explicit = song_dto.explicit
+    
+    db.commit() # confirma los cambios
+    db.refresh(song) # refresca el objeto de la base de datos
+    return song # retorna la canción actualizada
