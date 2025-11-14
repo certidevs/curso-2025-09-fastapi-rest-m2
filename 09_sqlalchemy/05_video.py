@@ -112,7 +112,13 @@ def init_db():
         db.close()
 
 # DEPENDENCIA DE FASTPI
-
+# método para dar sesión de base de datos al endpoint
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 # APLICACIÓN FASTAPI
 
