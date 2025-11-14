@@ -28,6 +28,7 @@ SessionLocal = sessionmaker(
     expire_on_commit=False
 )
 
+
 # MODELO DE BASE DE DATOS (SQLALCHEMY)
 # clase base
 class Base(DeclarativeBase):
@@ -48,7 +49,40 @@ class Video(Base):
     # optional
     has_subtitles: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
+
 # MODELOS PYDANTIC (SCHEMAS)
+class VideoResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: int
+    title: str
+    channel: str
+    views: int | None
+    has_subtitles: bool | None
+
+class VideoCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str
+    channel: str
+    views: int | None = None
+    has_subtitles: bool | None = None
+
+class VideoUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str
+    channel: str
+    views: int | None
+    has_subtitles: bool | None
+
+class VideoPatch(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    title: str | None = None
+    channel: str | None = None
+    views: int | None = None
+    has_subtitles: bool | None = None
 
 
 # INICIALIZACIÓN DE BASE DE DATOS
