@@ -111,6 +111,8 @@ def init_db():
     finally:
         db.close()
 
+init_db()
+
 # DEPENDENCIA DE FASTPI
 # método para dar sesión de base de datos al endpoint
 def get_db():
@@ -134,3 +136,8 @@ Read: Método GET (find_all y find_by_id)
 Update: Método PUT (update_full) y método PATCH (update_partial)
 Delete: Método DELETE (delete)
 """
+
+# GET - obtener TODOS vídeos
+@app.get("/api/videos", response_model=list[VideoResponse])
+def find_all(db: Session = Depends(get_db)):
+    return db.execute(select(Video)).scalars().all()
