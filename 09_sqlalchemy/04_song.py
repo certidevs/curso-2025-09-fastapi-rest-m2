@@ -300,3 +300,23 @@ def update_partial(id: int, song_dto: SongPatch, db: Session = Depends(get_db)):
     db.commit() # confirma los cambios en base datos
     db.refresh(song) # refresca el objeto
     return song
+
+# DELETE - eliminar una canción
+@app.delete("/api/songs/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_by_id(id: int, db: Session = Depends(get_db)):
+    # busca la canción por id
+    song = db.execute(
+        select(Song).where(Song.id == id)
+    ).scalar_one_or_none()
+    
+    # si no existe, devuelve 404
+    if not song:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado la canción con id {id}"
+        )
+    
+    # elimina la canción de base de datos
+    db.delete(song) # marca el objeto para eliminación
+    db.commit() # confirma la eliminación en base de datos
+    return None
