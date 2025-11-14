@@ -29,7 +29,24 @@ SessionLocal = sessionmaker(
 )
 
 # MODELO DE BASE DE DATOS (SQLALCHEMY)
+# clase base
+class Base(DeclarativeBase):
+    pass
 
+# modelo de tabla videos
+class Video(Base):
+    __tablename__ = "videos"
+    
+    # id, clave primaria
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    # obligatorio, 200 caracteres como máximo
+    title: Mapped[str] = mapped_column(String(200), nullable=False)
+    # obligatorio, 200 caracteres como máximo
+    channel: Mapped[str] = mapped_column(String(200), nullable=False)
+    # optional
+    views: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # optional
+    has_subtitles: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 # MODELOS PYDANTIC (SCHEMAS)
 
