@@ -86,7 +86,30 @@ class VideoPatch(BaseModel):
 
 
 # INICIALIZACIÓN DE BASE DE DATOS
+# crear las tablas de la base de datos
+Base.metadata.create_all(engine)
 
+# poblar tablas
+def init_db():
+    db = SessionLocal()
+    try:
+        existing_videos = db.execute(select(Video)).scalars().all()
+        
+        if existing_videos:
+            return
+        
+        default_videos = [
+            Video(title="Grajillas cantanto", channel="La Grajilla", views=9999999, has_subtitles=True),
+            Video(title="Curso de FastAPI", channel="Gente muy pro", views=5000, has_subtitles=False),
+            Video(title="Cómo instalar Linux", channel="Linux el mejor", views=25000, has_subtitles=True),
+            Video(title="Música ASMR para dormir", channel="ASMR para todos", views=400, has_subtitles=False),
+            Video(title="Cómo atraer aves a tu jardín", channel="Avibérico", views=8080, has_subtitles=True)
+        ]
+        
+        db.add_all(default_videos)
+        db.commit()
+    finally:
+        db.close()
 
 # DEPENDENCIA DE FASTPI
 
