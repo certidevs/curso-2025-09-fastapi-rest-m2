@@ -121,7 +121,11 @@ def get_db():
         db.close()
 
 # APLICACIÓN FASTAPI
+app = FastAPI(title="App de vídeos", version="3.1.4")
 
+@app.get("/")
+def home():
+    return {"mensaje": "Gracias por pasarte por nuestra app de vídeos :)"}
 
 # ENDPOINTS CRUD (Create, Read, Update, Delete)
 """
