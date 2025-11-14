@@ -13,7 +13,20 @@ VIDEO
 """
 
 # CONFIGURACIÓN DE BASE DE DATOS
+# motor de conexión
+engine = create_engine(
+    "sqlite:///09_sqlalchemy/videos.db",
+    echo=True,
+    connect_args={"check_same_thread": False}
+)
 
+# crear fábrica de sesiones
+SessionLocal = sessionmaker(
+    bind=engine,
+    autocommit=False,
+    autoflush=True,
+    expire_on_commit=False
+)
 
 # MODELO DE BASE DE DATOS (SQLALCHEMY)
 
