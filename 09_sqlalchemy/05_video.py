@@ -156,3 +156,37 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
         )
     
     return video
+
+# POST - crear un vídeo nuevo
+@app.post("/api/videos", response_model=VideoResponse, status_code=status.HTTP_201_CREATED)
+def create(video_dto: VideoCreate, db: Session = Depends(get_db)):
+    if not video_dto.title.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El título del vídeo no puede estar vacío"
+        )
+    
+    if not video_dto.channel.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El canal del vídeo no puede estar vacío"
+        )
+    
+    if video_dto.views is not None and video_dto.views < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Las visitas del vídeo no pueden ser menores que 0"
+        )
+    
+    video = Video(
+        title=video_dto.title.strip(),
+        channel=video_dto.channel.strip(),
+        views=video_dto.views,
+        has_subtitles=video_dto.has_subtitles
+    )
+    
+    db.add(video)
+    db.commit()
+    db.refresh(video)
+    
+    return video
