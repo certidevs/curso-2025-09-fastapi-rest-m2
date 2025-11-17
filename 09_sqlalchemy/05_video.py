@@ -190,3 +190,44 @@ def create(video_dto: VideoCreate, db: Session = Depends(get_db)):
     db.refresh(video)
     
     return video
+
+# PUT - REEMPLAZAR un vídeo
+@app.put("/api/videos/{id}", response_model=VideoResponse)
+def update_full(id: int, video_dto: VideoUpdate, db: Session = Depends(get_db)):
+    video = db.execute(
+        select(Video).where(Video.id == id)
+    ).scalar_one_or_none()
+    
+    if not video:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado el vídeo con id {id}"
+        )
+    
+    if not video_dto.title.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El título del vídeo no puede estar vacío"
+        )
+    
+    if not video_dto.channel.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El canal del vídeo no puede estar vacío"
+        )
+    
+    if video_dto.views is not None and video_dto.views < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Las visitas del vídeo no pueden ser menores que 0"
+        )
+    
+    video.title = video_dto.title.strip()
+    video.channel = video_dto.channel.strip()
+    video.views = video_dto.views
+    video.has_subtitles = video_dto.has_subtitles
+    
+    db.commit()
+    db.refresh(video)
+    
+    return video
