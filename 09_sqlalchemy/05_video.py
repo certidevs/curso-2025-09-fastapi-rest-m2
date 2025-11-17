@@ -231,3 +231,48 @@ def update_full(id: int, video_dto: VideoUpdate, db: Session = Depends(get_db)):
     db.refresh(video)
     
     return video
+
+# PATCH - actualizar PARCIALMENTE
+@app.patch("/api/videos/{id}", response_model=VideoResponse)
+def update_partial(id: int, video_dto: VideoPatch, db: Session = Depends(get_db)):
+    video = db.execute(
+        select(Video).where(Video.id == id)
+    ).scalar_one_or_none()
+    
+    if not video:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado el vídeo con id {id}"
+        )
+    
+    if video_dto.title is not None:
+        if not video_dto.title.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El título del vídeo no puede estar vacío"
+            )
+        video.title = video_dto.title.strip()
+    
+    if video_dto.channel is not None:
+        if not video_dto.channel.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El canal del vídeo no puede estar vacío"
+            )
+        video.channel = video_dto.channel.strip()
+    
+    if video_dto.views is not None:
+        if video_dto.views < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Las visitas del vídeo no pueden ser menores que 0"
+            )
+        video.views = video_dto.views
+    
+    if video_dto.has_subtitles is not None:
+        video.has_subtitles = video_dto.has_subtitles
+    
+    db.commit()
+    db.refresh(video)
+    
+    return video
