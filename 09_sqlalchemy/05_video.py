@@ -141,3 +141,18 @@ Delete: Método DELETE (delete)
 @app.get("/api/videos", response_model=list[VideoResponse])
 def find_all(db: Session = Depends(get_db)):
     return db.execute(select(Video)).scalars().all()
+
+# GET - obtener UN vídeo
+@app.get("/api/videos/{id}", response_model=VideoResponse)
+def find_by_id(id: int, db: Session = Depends(get_db)):
+    video = db.execute(
+        select(Video).where(Video.id == id)
+    ).scalar_one_or_none()
+    
+    if not video:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado el vídeo con id {id}"
+        )
+    
+    return video
