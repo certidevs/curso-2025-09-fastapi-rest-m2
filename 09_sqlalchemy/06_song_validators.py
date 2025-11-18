@@ -123,7 +123,31 @@ class SongPatch(BaseModel):
     artist: str | None = None
     duration_seconds: int | None = None
     explicit: bool | None = None
-
+    
+    @field_validator("title", "artist")
+    @classmethod
+    def validate_not_empty(cls, v: str | None) -> str | None:
+        # si no se proporcionó valor (None), no validamos
+        if v is None:
+            return None
+        
+        # si se proporcionó valor, validamos que no esté vacío
+        if not v or not v.strip():
+            raise ValueError("Este campo no puede estar vacío")
+        
+        return v.strip()
+    
+    @field_validator("duration_seconds")
+    @classmethod
+    def validate_duration_positive(cls, v: int | None) -> int | None:
+        if v is None:
+            return None
+        
+        if v < 0:
+            raise ValueError("La duración debe ser un número positivo")
+        
+        return v
+    
 
 # INICIALIZACIÓN BASE DE DATOS
 
@@ -269,27 +293,12 @@ def update_partial(id: int, song_dto: SongPatch, db: Session = Depends(get_db)):
     
     # actualiza SÓLO los campos que se han enviado (no son None)
     if song_dto.title is not None:
-        if not song_dto.title.strip():
-            raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El título de la canción no puede estar vacío"
-        )
-        song.title = song_dto.title.strip()
+        song.title = song_dto.title
     
     if song_dto.artist is not None:
-        if not song_dto.artist.strip():
-            raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El artista de la canción no puede estar vacío"
-        )
-        song.artist = song_dto.artist.strip()
+        song.artist = song_dto.artist
     
     if song_dto.duration_seconds is not None:
-        if song_dto.duration_seconds < 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="La duración debe ser un número positivo"
-            )
         song.duration_seconds = song_dto.duration_seconds
     
     if song_dto.explicit is not None:
