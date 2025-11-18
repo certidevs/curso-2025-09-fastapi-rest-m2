@@ -276,3 +276,21 @@ def update_partial(id: int, video_dto: VideoPatch, db: Session = Depends(get_db)
     db.refresh(video)
     
     return video
+
+# DELETE - ELIMINAR un vídeo
+@app.delete("/api/videos/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_by_id(id: int, db: Session = Depends(get_db)):
+    video = db.execute(
+        select(Video).where(Video.id == id)
+    ).scalar_one_or_none()
+    
+    if not video:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No se ha encontrado el vídeo con id {id}"
+        )
+    
+    db.delete(video)
+    db.commit()
+    
+    return None
