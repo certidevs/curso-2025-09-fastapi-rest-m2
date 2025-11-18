@@ -97,6 +97,22 @@ class SongUpdate(BaseModel):
     artist: str
     duration_seconds: int | None
     explicit: bool | None
+    
+    @field_validator("title", "artist")
+    @classmethod
+    def validate_not_emtpy(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Este campo no puede estar vacío")
+        
+        return v.strip()
+    
+    @field_validator("duration_seconds")
+    @classmethod
+    def validate_duration_positive(cls, v: int | None) -> int | None:
+        if v is not None and v < 0:
+            raise ValueError("La duración debe ser un número positivo")
+        
+        return v
 
 # schema para ACTUALIZACIÓN PARCIAL (PATCH)
 # sólo se envían los campos que quieras actualizar
@@ -227,27 +243,8 @@ def update_full(id: int, song_dto: SongUpdate, db: Session = Depends(get_db)):
             detail=f"No se ha encontrado la canción con id {id}"
         )
     
-    # validaciones (igual que en POST)
-    if not song_dto.title.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El artista de la canción no puede estar vacío"
-        )
-    
-    if not song_dto.artist.strip():
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El artista de la canción no puede estar vacío"
-        )
-    
-    if song_dto.duration_seconds is not None and song_dto.duration_seconds < 0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="La duración debe ser un número positivo"
-        )
-    
-    song.title = song_dto.title.strip()
-    song.artist = song_dto.artist.strip()
+    song.title = song_dto.title
+    song.artist = song_dto.artist
     song.duration_seconds = song_dto.duration_seconds
     song.explicit = song_dto.explicit
     
