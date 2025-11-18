@@ -40,7 +40,7 @@ class Song(Base):
     artist: Mapped[str] = mapped_column(String(200), nullable=False)
     # opcional
     duration_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    # optional
+    # opcional
     explicit: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 
@@ -100,7 +100,7 @@ class SongUpdate(BaseModel):
     
     @field_validator("title", "artist")
     @classmethod
-    def validate_not_emtpy(cls, v: str) -> str:
+    def validate_not_empty(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("Este campo no puede estar vacío")
         
@@ -157,7 +157,7 @@ Base.metadata.create_all(engine)
 # método inicializar con canciones por defecto
 def init_db():
     """
-    Inializa la base de datos con canciones por defecto si está vacía.
+    Inicializa la base de datos con canciones por defecto si está vacía.
     Sólo crea las canciones si no existen ya en la base de datos.
     """
     db = SessionLocal()
@@ -170,7 +170,7 @@ def init_db():
         default_songs = [
             Song(title="Mamma Mia", artist="ABBA", duration_seconds=300, explicit=False),
             Song(title="Sin ti no soy nada", artist="Amaral", duration_seconds=250, explicit=False),
-            Song(title="Sonata para piano nº 14", artist="Ludwing van Beethoven", duration_seconds=800, explicit=False),
+            Song(title="Sonata para piano nº 14", artist="Ludwig van Beethoven", duration_seconds=800, explicit=False),
             Song(title="Mediterráneo", artist="Joan Manuel Serrat", duration_seconds=400, explicit=False),
             Song(title="Never to Return", artist="Darren Korb", duration_seconds=300, explicit=False),
             Song(title="Billie Jean", artist="Michael Jackson", duration_seconds=294, explicit=False),
@@ -216,14 +216,14 @@ def home():
 def find_all(db: Session = Depends(get_db)):
     # db.execute(): ejecuta la consulta
     # select(Song): crea consulta SELECT * FROM song
-    # .scarlars(): extrae los objetos Song
+    # .scalars(): extrae los objetos Song
     # .all(): obtiene los resultados como lista
     return db.execute(select(Song)).scalars().all()
 
 # GET - obtener UNA canción por id
 @app.get("/api/songs/{id}", response_model=SongResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
-    # busca a canción con el id de la ruta
+    # busca la canción con el id de la ruta
     # .scalar_one_or_none(): devuelve el objeto o None si no existe
     song = db.execute(
         select(Song).where(Song.id == id)

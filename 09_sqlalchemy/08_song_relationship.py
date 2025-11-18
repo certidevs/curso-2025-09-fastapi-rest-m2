@@ -56,7 +56,7 @@ class Song(Base):
     
     # opcional
     duration_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    # optional
+    # opcional
     explicit: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
 
 
@@ -124,7 +124,7 @@ class SongUpdate(BaseModel):
     
     @field_validator("title")
     @classmethod
-    def validate_title_not_emtpy(cls, v: str) -> str:
+    def validate_title_not_empty(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("Este campo no puede estar vacío")
         
@@ -181,7 +181,7 @@ Base.metadata.create_all(engine)
 # método inicializar con canciones por defecto
 def init_db():
     """
-    Inializa la base de datos con canciones por defecto si está vacía.
+    Inicializa la base de datos con canciones por defecto si está vacía.
     Sólo crea las canciones si no existen ya en la base de datos.
     """
     db = SessionLocal()
@@ -194,7 +194,7 @@ def init_db():
         default_artists = [
             Artist(name="ABBA", birth_date=datetime(1972, 1, 1)),
             Artist(name="Amaral", birth_date=datetime(1972, 8, 4)),
-            Artist(name="Ludwing van Beethoven", birth_date=None),
+            Artist(name="Ludwig van Beethoven", birth_date=None),
             Artist(name="Joan Manuel Serrat", birth_date=None),
             Artist(name="Darren Korb", birth_date=None),
             Artist(name="Michael Jackson", birth_date=None),
@@ -260,14 +260,14 @@ def home():
 def find_all(db: Session = Depends(get_db)):
     # db.execute(): ejecuta la consulta
     # select(Song): crea consulta SELECT * FROM song
-    # .scarlars(): extrae los objetos Song
+    # .scalars(): extrae los objetos Song
     # .all(): obtiene los resultados como lista
     return db.execute(select(Song).options(joinedload(Song.artist))).unique().scalars().all()
 
 # GET - obtener UNA canción por id
 @app.get("/api/songs/{id}", response_model=SongResponse)
 def find_by_id(id: int, db: Session = Depends(get_db)):
-    # busca a canción con el id de la ruta
+    # busca la canción con el id de la ruta
     # .scalar_one_or_none(): devuelve el objeto o None si no existe
     song = db.execute(
         select(Song).where(Song.id == id).options(joinedload(Song.artist))
