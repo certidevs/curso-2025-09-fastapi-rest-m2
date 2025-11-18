@@ -238,7 +238,8 @@ def find_by_id(id: int, db: Session = Depends(get_db)):
 
 # POST - crear una nueva canción
 @app.post("/api/songs", response_model=SongResponse, status_code=status.HTTP_201_CREATED)
-def create(song_dto: SongCreate, db: Session = Depends(get_db)):    
+def create(song_dto: SongCreate, db: Session = Depends(get_db)):
+    
     # crea objeto Song con datos validados
     song = Song(
         title=song_dto.title,
@@ -246,6 +247,15 @@ def create(song_dto: SongCreate, db: Session = Depends(get_db)):
         duration_seconds=song_dto.duration_seconds,
         explicit=song_dto.explicit
     )
+    
+    """
+    song = Song()
+    
+    update_data = song_dto.model_dump()
+    
+    for field, value in update_data.items():
+        setattr(song, field, value)
+    """
     
     db.add(song) # agrega el objeto a la sesión
     db.commit() # confirma la creación en base de datos
