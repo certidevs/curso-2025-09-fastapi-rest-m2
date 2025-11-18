@@ -299,6 +299,7 @@ def update_partial(id: int, song_dto: SongPatch, db: Session = Depends(get_db)):
             detail=f"No se ha encontrado la canción con id {id}"
         )
     
+    """
     # actualiza SÓLO los campos que se han enviado (no son None)
     if song_dto.title is not None:
         song.title = song_dto.title
@@ -311,6 +312,12 @@ def update_partial(id: int, song_dto: SongPatch, db: Session = Depends(get_db)):
     
     if song_dto.explicit is not None:
         song.explicit = song_dto.explicit
+    """
+    
+    update_data = song_dto.model_dump(exclude_unset=True)
+    
+    for field, value in update_data.items():
+        setattr(song, field, value)
     
     db.commit() # confirma los cambios en base datos
     db.refresh(song) # refresca el objeto
